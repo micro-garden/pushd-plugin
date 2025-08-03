@@ -1,0 +1,17 @@
+[{
+	"Name": "pushd",
+	"Description": "Provides shell-like pushd, popd, and dirs commands.",
+	"Author": "Aki Kareha",
+	"Tags": ["directory", "stack", "shell"],
+	"Website": "https://github.com/akikareha/micro-pushd-plugin",
+	"License": "MIT",
+	"Versions": [
+		{
+			"Version": "0.0.0",
+			"Url": "https://github.com/akikareha/micro-pushd-plugin/archive/v0.0.0.zip",
+			"Require": {
+				"micro": ">=2.0.0"
+			}
+		}
+	]
+}]

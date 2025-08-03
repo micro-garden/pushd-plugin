@@ -1,35 +1,22 @@
-VERSION = "0.0.0"
+VERSION = "0.0.1"
 
 local micro = import("micro")
 local config = import("micro/config")
 local os = import("os")
-local filepath = import("path/filepath")
-
-local function isWindows()
-	return os.Getenv("windir") ~= ""
-end
 
 local function getCurrentDir()
-	local command = isWindows() and "cd" or "pwd"
-
-	local handle = io.popen(command)
-	if not handle then
+	local wd, err = os.Getwd()
+	if err ~= nil then
+		micro.InfoBar:Error("Getwd failed")
 		return nil
+	else
+		return wd
 	end
-
-	local result = handle:read("*l")
-	handle:close()
-	return result
 end
 
-local function setCurrentDir(path)
-	local ok, err = pcall(os.Chdir, path)
-
-	if not ok then
-		micro.InfoBar():Error("os.Chdir failed: " .. err)
-	else
-		micro.InfoBar():Message("Changed directory to " .. path)
-	end
+local function setCurrentDir(bp, path)
+	bp:CdCmd({ path })
+	micro.InfoBar():Message("Changed directory to " .. path)
 end
 
 local dirStack = {}
@@ -42,14 +29,14 @@ function pushd(bp, args)
 		else
 			local dir = dirStack[1]
 			dirStack[1] = getCurrentDir()
-			setCurrentDir(dir)
+			setCurrentDir(bp, dir)
 			return
 		end
 	end
 
 	if #args == 1 then
 		table.insert(dirStack, 1, getCurrentDir())
-		setCurrentDir(filepath.Abs(args[1]))
+		setCurrentDir(bp, args[1])
 		return
 	end
 
@@ -62,7 +49,7 @@ function popd(bp)
 		return
 	end
 
-	setCurrentDir(table.remove(dirStack, 1))
+	setCurrentDir(bp, table.remove(dirStack, 1))
 end
 
 function dirs(bp, args)
@@ -81,7 +68,7 @@ function dirs(bp, args)
 		if v == match then
 			table.remove(dirStack, i)
 			table.insert(dirStack, 1, getCurrentDir())
-			setCurrentDir(v)
+			setCurrentDir(bp, v)
 			return
 		end
 	end

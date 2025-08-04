@@ -21,7 +21,7 @@ end
 
 local dirStack = {}
 
-function pushd(bp, args)
+function PushdCmd(bp, args)
 	if #args == 0 then
 		if #dirStack == 0 then
 			micro.InfoBar():Error("Directory stack is empty")
@@ -43,7 +43,7 @@ function pushd(bp, args)
 	micro.InfoBar():Error("Too many arguments")
 end
 
-function popd(bp)
+function PopdCmd(bp)
 	if #dirStack == 0 then
 		micro.InfoBar():Error("Directory stack is empty")
 		return
@@ -52,7 +52,7 @@ function popd(bp)
 	setCurrentDir(bp, table.remove(dirStack, 1))
 end
 
-function dirs(bp, args)
+function DirsCmd(bp, args)
 	if #args == 0 then
 		local buf = {}
 		table.insert(buf, 0 .. " " .. getCurrentDir())
@@ -75,7 +75,7 @@ function dirs(bp, args)
 	micro.InfoBar():Error("No such directory in stack: " .. match)
 end
 
-function dirsComplete(bp)
+function DirsComplete(bp)
 	local completions = {}
 	local descriptions = {}
 
@@ -88,8 +88,8 @@ function dirsComplete(bp)
 end
 
 function init()
-	config.MakeCommand("pushd", pushd, config.FileComplete)
-	config.MakeCommand("popd", popd, config.NoComplete)
-	config.MakeCommand("dirs", dirs, dirsComplete)
+	config.MakeCommand("pushd", PushdCmd, config.FileComplete)
+	config.MakeCommand("popd", PopdCmd, config.NoComplete)
+	config.MakeCommand("dirs", DirsCmd, DirsComplete)
 	config.AddRuntimeFile("pushd", config.RTHelp, "help/pushd.md")
 end
